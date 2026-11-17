@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frameledger"
+version = "0.1.0"
+description = "Re-decode video to verify frame sampling provenance and timestamp contracts"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = ["av>=17,<18", "numpy>=1.26,<3", "Pillow>=10.3,<13"]
+
+[project.scripts]
+frameledger = "frameledger.cli:main"
+
+[project.urls]
+Repository = "https://github.com/gedouluhui/frameledger"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+frameledger = ["templates/*.html"]
