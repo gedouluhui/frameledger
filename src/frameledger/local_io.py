@@ -7,9 +7,11 @@ from .errors import InputError
 
 def local_path(value):
     text=os.fspath(value)
-    if not isinstance(text,str) or text.startswith(('//','\\\\')) or '://' in text:
+    if not isinstance(text,str) or text.replace('\\','/').startswith('//') or '://' in text:
         raise InputError('network/UNC paths are unsupported; use an ordinary local file')
     path=Path(os.path.abspath(text))  # lexical, no symlink resolution or filesystem I/O
+    if str(path).replace('\\','/').startswith('//'):
+        raise InputError('normalized UNC paths are unsupported')
     if os.name=='nt':
         import ctypes
         drive=PureWindowsPath(str(path)).drive

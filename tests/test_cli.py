@@ -14,8 +14,12 @@ class CLITests(unittest.TestCase):
         self.root=Path(self.tmp.name);self.video=self.root/'source.mkv';make_video(self.video)
 
     def cli(self,*args):
-        env=dict(os.environ,PYTHONPATH=str(Path(__file__).resolve().parents[1]/'src'))
-        return subprocess.run([sys.executable,'-m','frameledger',*map(str,args)],cwd=self.root,env=env,
+        env=dict(os.environ)
+        isolated=env.get('LEDGER_TEST_INSTALLED')=='1'
+        if isolated:env.pop('PYTHONPATH',None)
+        else:env['PYTHONPATH']=str(Path(__file__).resolve().parents[1]/'src')
+        command=[sys.executable,*(['-I'] if isolated else []),'-m','frameledger',*map(str,args)]
+        return subprocess.run(command,cwd=self.root,env=env,
                               capture_output=True,text=True,timeout=30)
 
     def test_real_sample_audit_and_tamper_cli(self):

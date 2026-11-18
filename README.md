@@ -61,7 +61,7 @@ The audit compares claims against fresh observations and real PNG pixels. Report
 | `1` | Complete audit found a mismatch |
 | `2` | Invalid input or incomplete/incomparable verification |
 
-A decoder-budget stop produces an `incomplete` audit report with no verified samples. A tool/decoder version difference is incomparable; a wrong pixel-format/orientation claim under the same versions is a mismatch. Source basename is part of the explicit contract: renaming an otherwise identical source is reported separately from byte identity.
+A decoder-budget stop produces an `incomplete` audit report with no verified samples. A tool/decoder version difference makes pixel equivalence incomparable, but a wrong pixel-format/orientation claim is a confirmed mismatch regardless of version, and confirmed failures are never downgraded by version ambiguity. Source basename is part of the explicit contract: renaming an otherwise identical source is reported separately from byte identity.
 
 ## What this version does not prove
 
@@ -106,7 +106,7 @@ python -m build
 
 Tests use handwritten rational selection oracles, real self-authored videos, separate ffprobe observations when available, PNG/manifest tampering, repeated truncation rejection, logging restoration, exact-fraction round trips, and failure/incomplete status checks. Optional external `ffmpeg`/`ffprobe` coverage is visibly skipped when the binaries are unavailable.
 
-An independent first review identified boundary defects; targeted regression tests and maintainer checks cover the fixes. **Independent post-fix re-review is still outstanding** because the review service became unavailable. Treat this as an early, explicitly scoped release—not a production certification. External real-world user validation is also outstanding.
+An independent first review identified boundary defects; an independent re-review then confirmed several fixes and found four remaining gaps: mixed-separator UNC paths reaching drive queries, confirmed metadata failures masked by version incomparability, non-transactional report publication, and origin/domain contradictions escaping as bare errors. Version 0.1.1 addresses these with targeted regression tests, and the source archive now carries its test helpers, mutation script and demo pages with a build-from-sdist verifier. **A fresh independent re-review of 0.1.1 is still outstanding.** Treat this as an early, explicitly scoped release—not a production certification. External real-world user validation is also outstanding.
 
 Issues are most useful with a small synthetic video, exact command, versions and expected frame identity. Do not upload private footage. New decoder/format adapters need their own timestamp and provenance contract.
 

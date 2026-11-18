@@ -140,19 +140,24 @@ def audit_manifest(path,manifest_path,*,max_frames=250000):
         return report
     if m['source']['name']!=observed['source']['name']:
         fail('source_name','Source basename differs from the declared name; the byte identity is recorded separately.')
-    version_difference=(m['tool_version']!=__version__ or any(not _same(m['decoder'][k],observed['decoder'][k])
-                         for k in ['pyav','ffmpeg_libraries']))
-    if version_difference:
-        report['status']='incomplete'
-        report['findings'].append(dict(code='version_incomparable',detail='Tool or decoder versions differ; pixel equivalence is not certified.',sample=None))
-        return report
     for key in ['orientation','pixel_format']:
         if not _same(m['decoder'][key],observed['decoder'][key]):
             fail('decoder_'+key,'Declared decoding semantics do not match the actual decoding path.')
+    version_difference=(m['tool_version']!=__version__ or any(not _same(m['decoder'][k],observed['decoder'][k])
+                         for k in ['pyav','ffmpeg_libraries']))
+    if version_difference:
+        if report['status']!='fail':report['status']='incomplete'
+        report['findings'].append(dict(code='version_incomparable',detail='Tool or decoder versions differ; pixel equivalence is not certified.',sample=None))
+        return report
     for key in ['frame_count','index_sha256']:
         if not _same(m[key],observed[key]):fail(key,'Full re-decoded index differs from the claim.')
     wanted=requested_times(m['requests'],m['origin'],observed['frames'])
-    indices=select_indices([Fraction(r['media_time']) for r in observed['frames']],wanted,m['policy'])
+    stamps=[Fraction(r['media_time']) for r in observed['frames']]
+    outside=[i for i,t in enumerate(wanted) if not stamps[0]<=t<=stamps[-1]]
+    if outside:
+        for i in outside:fail('claim_request_domain','Declared request and origin place this sample outside the observed source domain.',i)
+        return report
+    indices=select_indices(stamps,wanted,m['policy'])
     for n,(claim,index,request,want,file) in enumerate(zip(m['samples'],indices,m['requests'],wanted,evidence)):
         start_findings=len(report['findings'])
         actual=observed['frames'][index]

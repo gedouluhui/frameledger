@@ -3,6 +3,7 @@ from importlib.resources import files
 from pathlib import Path
 from .errors import InputError
 from .local_io import local_path
+from .output import output_transaction
 
 
 def _web(value):
@@ -21,7 +22,5 @@ def _write_into(report,directory):
 
 
 def write_report(report,out_dir):
-    out_dir=local_path(out_dir)
-    if out_dir.exists():raise InputError('output exists; choose a new directory')
-    out_dir.mkdir(parents=True,exist_ok=False)
-    _write_into(report,out_dir)
+    with output_transaction(out_dir) as staging:
+        _write_into(report,staging)
