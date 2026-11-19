@@ -1,5 +1,7 @@
 # FrameLedger
 
+[![CI](https://github.com/gedouluhui/frameledger/actions/workflows/ci.yml/badge.svg)](https://github.com/gedouluhui/frameledger/actions/workflows/ci.yml)
+
 **A timestamp is a claim. Keep the frame evidence.**
 
 [Interactive demo](https://gedouluhui.github.io/frameledger/) · [Tampered example](https://gedouluhui.github.io/frameledger/tampered.html) · [中文](README.zh-CN.md) · [Offline example](docs/index.html) · [MIT license](LICENSE)
