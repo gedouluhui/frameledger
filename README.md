@@ -113,3 +113,34 @@ Issues are most useful with a small synthetic video, exact command, versions and
 ## License and provenance
 
 Original code and procedural demo media: MIT. PyAV is BSD-3-Clause; NumPy and Pillow retain their own licenses. FFmpeg components used by PyAV wheels retain the licenses of their actual builds; this repository does not bundle standalone FFmpeg binaries or redistribute a Python environment. Consult the installed dependency notices before redistributing an application bundle. AI assistance was used in implementation and review; claims are bounded by executable evidence, not authorship marketing.
+
+## Quickstart and support
+
+### Problem
+Preserve exact frame-sampling evidence by exporting frames under an explicit time contract and auditing them with a fresh source decode.
+
+### Install
+```sh
+python -m pip install .
+```
+
+### Success
+```sh
+frameledger demo --out demo-output
+```
+Expected: The self-authored VFR video produces a passing valid audit and a detected tampered audit; exit 0.
+
+### Deliberate failure
+```sh
+frameledger audit demo-output/synthetic-vfr.mkv demo-output/samples/tampered-manifest.json --out tampered-audit
+```
+Expected: The deliberately changed PTS is reported as a mismatch and exits 1.
+
+### Evidence and coverage boundaries
+Evidence uses handwritten rational-selection oracles, real self-authored videos, fresh ffprobe observations when available, PNG/manifest tampering, truncation rejection, logging restoration, and exact-fraction round trips. It proves consistency for the supplied file and recorded tools, not recording completeness or cross-version decoder equality.
+
+### Support status
+Version 0.1.2 supports Python 3.11+ with PyAV and local FFmpeg/ffprobe. Version 0.1.1 fixes have targeted regression tests, but a fresh independent re-review and external real-world validation remain outstanding. Maintenance is best-effort with no SLA.
+
+### Limitations
+Output is CPU RGB24 in raw decoded orientation. Audio sync, HDR/colorimetric fidelity, rotation-aware presentation, GPU behavior, browser-accurate seeking, and cross-version decoder equality are not proven. The tool is not an OS security sandbox for hostile codec inputs.

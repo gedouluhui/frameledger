@@ -39,3 +39,34 @@ frameledger audit video.mkv samples/manifest.json --out verification
 已进行首次独立代码审查；独立复审确认部分修复，并发现四项遗留缺口：混合分隔符 UNC 仍触达驱动器查询、已确认的元数据失败被版本不可比掩盖、报告发布不具备事务性、origin 与请求域矛盾以裸异常逃逸。0.1.1 针对这些缺口补了回归测试；源码包现已带测试辅助、变异脚本和演示页，并附源码包→wheel→全新环境安装验证器。**对 0.1.1 的全新独立复审仍未完成**；不将维护者复验称作独立批准。当前是明确范围的早期版本，尚无外部真实用户验证。
 
 自有代码与演示视频为 MIT。PyAV／FFmpeg、NumPy、Pillow 保留各自实际发行版本的许可证；源码仓不捆绑第三方独立编解码二进制或 Python 环境。
+
+## 快速开始与支持状态
+
+### 问题
+在显式时间契约下导出帧，并通过重新解码源文件审计，从而保留精确的帧采样证据。
+
+### 安装
+```sh
+python -m pip install .
+```
+
+### 成功命令
+```sh
+frameledger demo --out demo-output
+```
+预期：自生成 VFR 视频产生通过的 valid 审计和检测到篡改的审计；退出码 0。
+
+### 故意失败命令
+```sh
+frameledger audit demo-output/synthetic-vfr.mkv demo-output/samples/tampered-manifest.json --out tampered-audit
+```
+预期：故意修改的 PTS 被报告为不匹配；退出码 1。
+
+### 证据与覆盖边界
+证据使用手写有理数选择 oracle、真实自生成视频、可用时独立的 ffprobe 观察、PNG/manifest 篡改、截断拒绝、日志恢复和精确分数往返。它证明所提供文件和所记录工具下的一致性，不证明录制完整性或跨版本解码器相等。
+
+### 支持状态
+版本 0.1.2 支持 Python 3.11+、PyAV 和本地 FFmpeg/ffprobe。0.1.1 的修复已有针对性回归测试，但新的独立复审和外部真实验证仍待完成。维护为尽力而为，不提供 SLA。
+
+### 限制
+输出为原始解码方向的 CPU RGB24。不证明音频同步、HDR/色彩保真、旋转感知呈现、GPU 行为、浏览器精确 seek 或跨版本解码器相等。该工具不是针对恶意编解码器输入的操作系统安全沙箱。
